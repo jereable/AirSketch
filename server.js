@@ -1,9 +1,15 @@
-var http = require('http');
+var express = require('express');
+var app = express();
 
-function onRequest(request, response) {
-	response.writeHead(200, {'Content-Type': 'text/html'});
-	response.write('<p>Hello <strong>World</p>');
-	response.end();
-}
+app.set('port', (process.env.PORT || 80));
 
-http.createServer(onRequest).listen(process.env.PORT || 8000);
+app.use(express.static(__dirname + '/public'));
+
+// app.get('/', function(request, response) {
+  // response.render('helloworld.html');
+// });
+
+app.listen(app.get('port'), function() {
+  console.log('Node app is running on port', app.get('port'));
+});
+
