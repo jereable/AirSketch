@@ -14,9 +14,15 @@ app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
 });
 
+var wsInstance = expressWs.getWss();
+
 app.ws('/echo', function(ws, req) {
   ws.on('message', function(message) {
-    ws.send(message);
+	wsInstance.clients.forEach(function(client) {
+		if (client.readyState === 1) {
+			client.send(message);
+		}
+	});    
 	console.log(message);
   });
 });
