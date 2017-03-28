@@ -10,5 +10,17 @@
     <script type="text/javascript">
     	 drawingApp.init();
 	</script>
+	<input id="messageSender" type="text"></input>
+	<script>
+		var kickassSocket = new WebSocket(window.location.origin.replace("http", "ws") + "/echo", "message");
+		var input = document.getElementById("messageSender");
+		input.oninput = function(event) { 
+			kickassSocket.send(event.target.value); 
+		}
+		kickassSocket.onmessage = function(event) {
+			console.log(event);
+			input.value = event.data;
+		}
+	</script>
   </body>
 </html>
