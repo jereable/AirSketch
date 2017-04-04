@@ -254,7 +254,7 @@ var drawingApp = (function () {
 					context.moveTo(clickX[i] - 1, clickY[i]);
 				}
 				context.lineTo(clickX[i], clickY[i]);
-				
+
 				// Set the drawing color
 				if (clickTool[i] === "eraser") {
 					//context.globalCompositeOperation = "destination-out"; // To erase instead of draw over with white
@@ -299,8 +299,8 @@ var drawingApp = (function () {
 
 		// Add mouse and touch event listeners to the canvas
 		createUserEvents = function () {
-
-			var press = function (e) {
+			// Piirtää canvakselle serverin käskiessä
+			window.serverInitiatedPress = function (e) {
 				// Mouse down location
 				var sizeHotspotStartX,
 					mouseX = (e.changedTouches ? e.changedTouches[0].pageX : e.pageX) - this.offsetLeft,
@@ -348,27 +348,35 @@ mouseY = (e.changedTouches ? e.changedTouches[0].pageY : e.pageY) - this.offsetT
 				paint = true;
 				addClick(mouseX, mouseY, false);
 				redraw();
-			},
+			}
+			window.press = function (e) {
+				// Lähetetään painallus WebSockettiin
+				kickassSocket.send(JSON.stringify({
+					x: e.pageX,
+					y: e.pageY
+				}));
 
-			drag = function (e) {
-				
+			};
+
+			window.drag = function (e) {
+
 				var mouseX = (e.changedTouches ? e.changedTouches[0].pageX : e.pageX) - this.offsetLeft,
 					mouseY = (e.changedTouches ? e.changedTouches[0].pageY : e.pageY) - this.offsetTop;
-				
+
 				if (paint) {
 					addClick(mouseX, mouseY, true);
 					redraw();
 				}
 				// Prevent the whole page from dragging if on mobile
 				e.preventDefault();
-			},
+			};
 
-			release = function () {
+			window.release = function () {
 				paint = false;
 				redraw();
-			},
+			};
 
-			cancel = function () {
+			window.cancel = function () {
 				paint = false;
 			};
 
