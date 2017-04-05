@@ -10,21 +10,11 @@
     <script type="text/javascript">
     	 drawingApp.init();
 	</script>
-	<input id="messageSender" type="text"></input>
 	<script>
     // Luo WebSocket
 		var kickassSocket = new WebSocket(window.location.origin.replace("http", "ws") + "/echo", "message");
-    // Haetaan messageSender input
-    var input = document.getElementById("messageSender");
-    // Tehdään 'jotain' kun inputtiin kirjoitetaan
-		input.oninput = function(event) {
-      // Lähetetään WebSockettiin inputin sisältö
-			kickassSocket.send(event.target.value);
-		}
     // Kun WebSocketista tulee viesti tee jotain
 		kickassSocket.onmessage = function(event) {
-      // Asetetaan inputin arvoksi event data
-			input.value = event.data;
       // Parsitaan eventistä löytyvä string helpommin käsiteltävään muotoon
       var coordinates = JSON.parse(event.data);
       //  Jos WebSocketista tulee viesti ("press")
