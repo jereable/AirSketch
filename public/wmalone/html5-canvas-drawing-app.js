@@ -353,12 +353,11 @@ mouseY = (e.changedTouches ? e.changedTouches[0].pageY : e.pageY) - this.offsetT
 				// Lähetetään painallus WebSockettiin
 				kickassSocket.send(JSON.stringify({
 					x: e.pageX,
-					y: e.pageY
+					y: e.pageY,
+					type: "press"
 				}));
-
 			};
-
-			window.drag = function (e) {
+			window.serverInitiatedDrag = function (e) {
 
 				var mouseX = (e.changedTouches ? e.changedTouches[0].pageX : e.pageX) - this.offsetLeft,
 					mouseY = (e.changedTouches ? e.changedTouches[0].pageY : e.pageY) - this.offsetTop;
@@ -367,19 +366,36 @@ mouseY = (e.changedTouches ? e.changedTouches[0].pageY : e.pageY) - this.offsetT
 					addClick(mouseX, mouseY, true);
 					redraw();
 				}
+			};
+			window.drag = function (e) {
+				kickassSocket.send(JSON.stringify({
+					x: e.pageX,
+					y: e.pageY,
+					type: "drag"
+				}));
+
 				// Prevent the whole page from dragging if on mobile
 				e.preventDefault();
 			};
 
-			window.release = function () {
+			window.serverInitiatedRelease = function () {
 				paint = false;
 				redraw();
 			};
+			window.release = function () {
+				kickassSocket.send(JSON.stringify({
+					type: "release"
+				}));
+			}
 
-			window.cancel = function () {
+			window.serverInitiatedCancel = function () {
 				paint = false;
 			};
-
+			window.cancel = function () {
+				kickassSocket.send(JSON.stringify({
+					type: "cancel"
+				}));
+			}
 			// Add mouse event listeners to canvas element
 			canvas.addEventListener("mousedown", press, false);
 			canvas.addEventListener("mousemove", drag, false);

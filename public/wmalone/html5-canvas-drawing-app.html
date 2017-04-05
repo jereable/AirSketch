@@ -25,10 +25,22 @@
 		kickassSocket.onmessage = function(event) {
       // Asetetaan inputin arvoksi event data
 			input.value = event.data;
-      var koordinaatit = JSON.parse(event.data);
-      // Piirretään eventistä löytyvä koordinaatti canvakselle
-      serverInitiatedPress.bind(document.getElementById('canvas'))({pageX: koordinaatit.x, pageY: koordinaatit.y});
-
+      // Parsitaan eventistä löytyvä string helpommin käsiteltävään muotoon
+      var coordinates = JSON.parse(event.data);
+      //  Jos WebSocketista tulee viesti ("press")
+      if (coordinates.type === "press") {
+        // Client press:aa saaduissa koordinaateissa (Maalaa pisteen canvakselle)
+        serverInitiatedPress.bind(document.getElementById('canvas'))({pageX: coordinates.x, pageY: coordinates.y});
+      }
+      if (coordinates.type === "drag") {
+        serverInitiatedDrag.bind(document.getElementById('canvas'))({pageX: coordinates.x, pageY: coordinates.y});
+      }
+      if (coordinates.type === "release") {
+        serverInitiatedRelease.bind(document.getElementById('canvas'))();
+      }
+      if (coordinates.type === "cancel") {
+        serverInitiatedCancel.bind(document.getElementById('canvas'))();
+      }
 		}
 	</script>
   </body>
