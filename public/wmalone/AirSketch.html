@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AirSketch - Jeren prokkis/title>
+  </head>
+  <body>
+    <div id="canvasDiv"></div>
+    <!--[if IE]><script type="text/javascript" src="excanvas.js"></script><![endif]-->
+    <script type="text/javascript" src="html5-canvas-drawing-app.js"></script>
+    <script type="text/javascript">
+    	 drawingApp.init();
+	</script>
+	<script>
+    // Luo WebSocket
+		var kickassSocket = new WebSocket(window.location.origin.replace("http", "ws") + "/echo", "message");
+    // Kun WebSocketista tulee viesti tee jotain
+		kickassSocket.onmessage = function(event) {
+      // Parsitaan eventistä löytyvä string helpommin käsiteltävään muotoon
+      var coordinates = JSON.parse(event.data);
+      //  Jos WebSocketista tulee viesti ("press")
+      if (coordinates.type === "press") {
+        // Client press:aa saaduissa koordinaateissa (Maalaa pisteen canvakselle)
+        serverInitiatedPress.bind(document.getElementById('canvas'))({pageX: coordinates.x, pageY: coordinates.y});
+      }
+      if (coordinates.type === "drag") {
+        serverInitiatedDrag.bind(document.getElementById('canvas'))({pageX: coordinates.x, pageY: coordinates.y});
+      }
+      if (coordinates.type === "release") {
+        serverInitiatedRelease.bind(document.getElementById('canvas'))();
+      }
+      if (coordinates.type === "cancel") {
+        serverInitiatedCancel.bind(document.getElementById('canvas'))();
+      }
+		}
+	</script>
+  </body>
+</html>
